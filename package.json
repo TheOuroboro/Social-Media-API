@@ -1,0 +1,18 @@
+{
+  "name":"SocialMediaApi",
+  "version":"1.0.0",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.16.2",
+    "node": "^25.5.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  },
+  "scripts": {
+    "start":"node src/server.js",
+    "dev":"nodemon src/server.js"
+  }
+}
