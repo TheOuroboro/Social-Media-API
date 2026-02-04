@@ -54,8 +54,29 @@ const unlikePost = async(res,req) => {
 
 };
 
+//get Posts with like
+const getPostWithLikes = async (req, res) => {
+    const postId = req.params.id;
+    try {
+        const sql = `
+            SELECT posts.id, posts.content, COUNT(l.user_id) AS likes
+            FROM posts 
+            LEFT JOIN likes l ON posts.id = l.post_id
+            WHERE posts.id = ?
+            GROUP BY posts.id
+        `;
+        const [rows] = await db.promise().query(sql, [postId]);
+        if (rows.length === 0) {
+            return res.status(404).json({ message: "Post not found" });
+        }
+        res.json(rows[0]);
+    } catch (error) {
+        res.status(500).json({ message: "Failed to fetch post with like count" });
+    }
+};
 
 module.exports = {
     likePost,
-    unlikePost
+    unlikePost,
+    getPostWithLikes
 }

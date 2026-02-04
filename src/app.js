@@ -17,9 +17,9 @@ const commentRoutes = require("./routes/commentRoutes")
 //use  Routes
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
-app.use("/api/comment", commentRoutes);
-app.use("/api/like", likeRoutes);
-app.use("/api/follow", followRoutes);
+app.use("/api/comments", commentRoutes);
+app.use("/api/likes", likeRoutes);
+app.use("/api/follows", followRoutes);
 
 //Test Routes
 app.get ("/",(req,res) => {

@@ -1,53 +1,5 @@
 const db = require ("../db");
 
-
-// Get all posts
-const getAllposts = async (req,res) => {
-    try {
-        const[rows] = await db.promise().query(`SELECT posts.id, posts.content, posts.created_at, users.id AS user_id, users.username
-         FROM posts
-         JOIN users ON posts.user_id = users.id
-         WHERE posts.id = ?`,
-        [id]
-        );
-        if (rows.lenght === 0){
-            return res.staust(400).json({success: false, message: "Could not fetch post"});
-        }
-        res.json ({success:true,post:row[0]});
-    } catch (error) {
-        console.error(error)
-        res.status(500).json({success:false, message: " failed to get post"});
-
-    }
-};
-
-
-// GET a single post by ID
-const getPostById = async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const [rows] = await db
-      .promise()
-      .query(
-        `SELECT posts.id, posts.content, posts.created_at, users.id AS user_id, users.username
-         FROM posts
-         JOIN users ON posts.user_id = users.id
-         WHERE posts.id = ?`,
-        [id]
-      );
-
-    if (rows.length === 0) {
-      return res.status(404).json({ success: false, message: "Post not found" });
-    }
-
-    res.json({ success: true, post: rows[0] });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "Failed to fetch post" });
-  }
-};
-
 //create a new post
 const createPost = async (req,res)=> {
     const {user_id, content} = req.body
@@ -64,7 +16,7 @@ const createPost = async (req,res)=> {
         }
 
 
-        //Inser new post 
+        //Insert new post 
         const[result ]= await db.promise().query("INSERT INTO posts (user_id, content) VALUES (?, ?)", [user_id, content]);
 
         //fetch the newly created posts 
@@ -74,16 +26,135 @@ const createPost = async (req,res)=> {
          WHERE posts.id = ?`,
          [result.insertId]
         );
-        res.status(201).json({success: true, post: postRow[0]});
+        res.status(201).json({success: true, post: postRows[0]});
     } catch (error) {
         console.error(error);
         res.status(500).json({status:false, message:"failes to create post"});
     }
 };
 
+// Get all posts
+const getAllposts = async (req,res) => {
+    try {
+        const sql = 
+        `SELECT 
+        posts.id,
+        posts.content,
+        users.username
+        FROM posts 
+        JOIN users ON posts.user_id = users.id`;
+        const[rows] = await db.promise().query(sql);
+
+
+        if (rows.lenght === 0){
+            return res.status(400).json({success: false, message: "Could not fetch post"});
+        }
+        res.status(200).json ({success:true,post:rows[0]});
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({success:false, message: " failed to get post"});
+
+    }
+};
+
+
+// GET a single post by ID
+const getPostById = async (req, res) => {
+  const postId  = req.params;
+
+  try {
+    const sql = `
+    SELECT 
+    post.id ,
+    posts.content,
+    posts.created_at,
+    users.username,
+    users.email
+
+    FROM posts
+    JOIN users ON posts.user_id = users.id
+    WHERE posts.id = ?
+    `
+    const [rows] = await db.promise().query(sql, [postId]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ success: false, message: "Post not found" });
+    }
+
+    res.status(200).json({ success: true, post: rows[0] });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Failed to fetch post" });
+  }
+};
+
+
+
+// Get post by like count
+const getPostByLikeCount = async (req, res) => {
+  const postId  = req.params;
+
+  try {
+    const sql = `
+    SELECT 
+    posts.id, 
+    posts.content, 
+    COUNT(likes.user_id) AS likes
+    FROM posts 
+    LEFT JOIN likes ON posts.id = likes.post_id
+    WHERE posts.id = ?
+    GROUP BY posts.id;
+    `
+    const [rows] = await db.promise().query(sql, [postId]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ success: false, message: "Post not found" });
+    }
+
+    res.status(200).json({ success: true, post: rows[0] });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Failed to fetch post by like count" });
+  }
+};
+
+
+// Get posts By Author Info
+const getPostWithAuthor = async (req, res) => {
+
+  try {
+    const sql = `
+    SELECT 
+    post.id ,
+    posts.content,
+    users.username,
+
+    FROM posts
+    JOIN users ON posts.user_id = users.id
+    ORBER BY posts.created_at DESC
+    `
+    const [rows] = await db.promise().query(sql);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ success: false, message: "Post not found" });
+    }
+
+    res.status(200).json({ success: true, post: rows[0] });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Failed to fetch post" });
+  }
+};
+
+
+
+
+
 
 module.exports= {
     getAllposts,
     getPostById,
     createPost,
+    getPostByLikeCount,
+    getPostWithAuthor
 };

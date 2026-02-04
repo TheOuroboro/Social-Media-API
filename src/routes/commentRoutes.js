@@ -8,12 +8,9 @@ const {
 }  = require("../controllers/commentController");
 
 router.post("/", createComment);
-router.post("/" , getPostComments);
+router.get("/posts/:id/comments" , getPostComments);
 
-// //Get all comments
-// router.get ("/", (req,res)=>{
-//     res.send("comment routes working");
-// })
+
 
 // //Post a new comment
 // router.post("/", (req,res) => {

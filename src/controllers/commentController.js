@@ -1,3 +1,5 @@
+const db = require("../db")
+
 // CREATE A COMMENT
 const createComment = async (req, res) => {
   const { userId, postId, content } = req.body;
