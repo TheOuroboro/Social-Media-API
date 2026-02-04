@@ -6,3 +6,55 @@ We'll be building an api that will use the following
 - Model one to many and many - many relationship 
 - Use JOIN to fetch data
 - Expose everything via an express api
+
+
+          ┌───────────────┐
+          │   app.js      │
+          │ (Middleware)  │
+          └──────┬────────┘
+                 │
+     ┌───────────┴─────────────┐
+     │                         │
+┌─────────────┐           ┌─────────────┐
+│  Routes     │           │  Routes     │
+│ /api/users  │           │ /api/posts  │
+└─────┬───────┘           └─────┬───────┘
+      │                           │
+      │                           │
+┌─────┴─────────┐         ┌───────┴────────┐
+│ userController│         │ postController │
+│ createUser    │         │ createPost     │
+│ getUsers      │         │ getAllPosts    │
+└─────┬─────────┘         │ getPostById    │
+                          │ getPostWithLikes│
+                          │ getPostsByAuthor│
+                          └─────┬───────────┘
+                                │
+                                │
+                    ┌───────────┴───────────┐
+                    │         DB            │
+                    │ Users      Posts      │
+                    │ Comments   Likes      │
+                    │ Follows                │
+                    └───────────────────────┘
+
+┌───────────────┐      ┌───────────────┐
+│ /api/comments │      │ /api/likes    │
+└─────┬─────────┘      └─────┬─────────┘
+      │                      │
+      │                      │
+┌─────┴─────────┐      ┌─────┴─────────┐
+│ commentCtrl   │      │ likeController│
+│ createComment │      │ likePost      │
+│ getPostComments│     │ unlikePost    │
+└───────────────┘      └───────────────┘
+
+┌───────────────┐
+│ /api/follows  │
+└─────┬─────────┘
+      │
+┌─────┴─────────┐
+│ followController│
+│ followUser     │
+│ unfollowUser   │
+└───────────────┘
