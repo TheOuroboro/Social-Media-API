@@ -1,24 +1,21 @@
 const db = require ("../db");
-/**
- * POST/follows 
- * body: {followerId, FollowedID
- */ 
+// follow a user
 const followUser = async(req,res) => {
-    const {followerId,followingId} = req.body ;
+    const {follower_id,followed_id} = req.body ;
 
-    if (!followerId || !followingId) {
-        return res.status(400).json({message: "Missing followerId of FollowingId"})
+    if (!follower_id || !followed_id) {
+        return res.status(400).json({message: "Missing followerId or FollowedId"})
     }
-    if (followerId === followingId){
+    if (follower_id === followed_id){
         return res.status(400).json({message: "you cannot follow yourself"})
     }
 
     try {
         const sql =`
-        INSERT INTO follows (follower_id,following_id)
+        INSERT INTO follows (follower_id,followed_id)
         VALUES(?, ?)
         `;
-        await db.promise().query(sql,[followerId,followingId]);
+        await db.promise().query(sql,[follower_id,followed_id]);
 
         res.status(201).json({message: "you're now following this handle"})
     } catch (error) {
@@ -35,18 +32,18 @@ const followUser = async(req,res) => {
  */
 
 const unfollowUser = async (req,res) => {
-    const { followerId,followingId} = req.body;
+    const { follower_id,followed_id} = req.body;
 
-    if (!followerId || !followingId){
-        return res.status(400).json({message: "Missing followerId or followingId"})
+    if (!follower_id || !followed_id){
+        return res.status(400).json({message: "Missing followerId or followinged"})
     }
     try {
         const sql = `
         DELETE FROM follows
-      WHERE follower_id = ? AND following_id = ?
+      WHERE follower_id = ? AND followed_id = ?
       `;
 
-      const [result] = await db.promise().query(sql,[followerId,followingId]);
+      const [result] = await db.promise().query(sql,[follower_id,followed_id]);
 
       if (result.affectedRows === 0){
         return res.status(404).json({message:"You're not following this user"});
@@ -57,6 +54,8 @@ const unfollowUser = async (req,res) => {
     }
 };
 
+
+//get followers
 const getFollowers = async (req, res) => {
     const userId = req.params.id;
     try {
@@ -64,7 +63,7 @@ const getFollowers = async (req, res) => {
             SELECT users.username
             FROM follows 
             JOIN users  ON follows.follower_id = users.id
-            WHERE follows.following_id = ?
+            WHERE follows.followed_id = ?
         `;
         const [rows] = await db.promise().query(sql, [userId]);
         res.json(rows); // array of usernames

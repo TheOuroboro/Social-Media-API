@@ -8,7 +8,8 @@ const {
 }  = require("../controllers/commentController");
 
 router.post("/", createComment);
-router.get("/posts/:id/comments" , getPostComments);
+router.get("/posts/:id/comments", getPostComments);
+
 
 
 

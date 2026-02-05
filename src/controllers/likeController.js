@@ -3,9 +3,9 @@ const db = require ("../db");
 //Like a Post
 const likePost = async(req,res) => {
     try {
-        const { userId, postId} = req.bdoy ;
+        const { user_id, post_id} = req.body ;
 
-    if (!userId || postId){
+    if (!user_id || !post_id){
         return res.status(400).json({message: "UserId and postId are required"});
     }
 
@@ -14,13 +14,13 @@ const likePost = async(req,res) => {
     VALUES (?,?)`
     ;
 
-    await db.query(sql,[postId,userId]);
-    res.status(201).json({message:"message liked successfully"});
+    await db.promise().query(sql,[user_id,post_id]);
+    res.status(201).json({message:"post liked successfully"});
     } catch (error) {
         if (error.code ==="ER_DUP_ENTRY"){
             return res.status(409).json({message: "yous already liked this post"})
         }
-        res.status(500).json({eroor: error.message})
+        res.status(500).json({error: error.message})
 
     }
     
@@ -30,23 +30,23 @@ const likePost = async(req,res) => {
 
 //Unlike a post
 
-const unlikePost = async(res,req) => {
+const unlikePost = async(req,res) => {
     try {
-        const { userId, postId} = req.bdoy;
-        if (!userId || postId ){
+        const { user_id, post_id} = req.body;
+        if (!user_id || !post_id ){
             return res.status(400).json({message: "userId and postId is required"});
         }
 
         const sql = 
         ` DELETE FROM likes
-        WHERE user_id + ? AND postId = ?
+        WHERE user_id = ? AND post_id = ?
         `;
 
-        const [result] = await db.query(sql, [userId,postId]);
+        const [result] = await db.promise().query(sql, [user_id,post_id]);
         if (result.affectedRows === 0){
-            res.status(409).json({message: "like ot found"});
+            res.status(409).json({message: "like not found"});
         }
-        res.status(201),json({message: "you've successfully liked this post"});
+        res.status(200).json({message: "like deleted"});
 
     } catch (error) {
         res.status(500).json({error: error.message});
@@ -56,20 +56,20 @@ const unlikePost = async(res,req) => {
 
 //get Posts with like
 const getPostWithLikes = async (req, res) => {
-    const postId = req.params.id;
+    const post_id = req.params.id;
     try {
         const sql = `
-            SELECT posts.id, posts.content, COUNT(l.user_id) AS likes
+            SELECT posts.id, posts.content, COUNT(likes.user_id) AS likes
             FROM posts 
-            LEFT JOIN likes l ON posts.id = l.post_id
+            LEFT JOIN likes ON posts.id = likes.post_id
             WHERE posts.id = ?
             GROUP BY posts.id
         `;
-        const [rows] = await db.promise().query(sql, [postId]);
+        const [rows] = await db.promise().query(sql, [post_id]);
         if (rows.length === 0) {
-            return res.status(404).json({ message: "Post not found" });
+            return res.status(404).json({    message: "Post not found" });
         }
-        res.json(rows[0]);
+        res.json({success: true, post:rows[0]});
     } catch (error) {
         res.status(500).json({ message: "Failed to fetch post with like count" });
     }

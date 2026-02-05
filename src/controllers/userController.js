@@ -5,7 +5,7 @@ const db = require ("../db");
 const getAllUsers = async (req,res) => {
     try {
         const[rows] = await db.promise().query("SELECT ID , username, email, created_at FROM users")
-        res.json ({success:true,users:row});
+        res.json ({success:true,users:rows});
     } catch (error) {
         console.error(error)
         res.status(500).json({success:false, message: " failed to get users"});
@@ -21,13 +21,11 @@ const createUser = async (req,res)=> {
     }
     try {
         //inset into table
-        const [result] = await db
-        .promise()
-        .query("INSERT INTO users (name,email) VALUES (?,?)", [username,email]);
+        const [result] = await db.promise().query("INSERT INTO users (username,email) VALUES (?,?)", [username,email]);
 
         //return the created user 
-        const[rows ]= await db.promise().query("SELECT id, username, email, created_at FROM users WHERE ID = ? ",[results.InsertId]);
-        res.status(201).json ({success:true, user: row [0]});
+        const[rows ]= await db.promise().query("SELECT ID, username, email, created_at FROM users WHERE ID = ? ",[result.InsertId]);
+        res.status(201).json ({success:true, user: rows [0]});
     } catch (error) {
         console.error(error);
         
@@ -35,7 +33,7 @@ const createUser = async (req,res)=> {
         if (error.code === "ER_DUP_ENTRY"){
             return res.status(400).json({ success:false, message: "Username or email already in use"});
         }
-        res.status(500).json({status:false, message:"failes to create user"});
+        res.status(500).json({status:false, message:"failed to create user"});
     }
 };
 

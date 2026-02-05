@@ -1,17 +1,11 @@
-const express = require ("express");
+const express = require("express");
 const router = express.Router();
-const { getAllUsers, createUser } = require ("../controllers/userController")
+const { getAllUsers, createUser } = require("../controllers/userController");
 
+// Get all users
+router.get("/", getAllUsers);
 
-//Get all user
-router.get("/", (req,res)=> {
-    res.send("Useers route is working");
-});
-
-//post a new user
-router.post("/", (req,res) => {
-    const {username,email} = req.body;
-    res.send(`User created: ${username} (${email})`);
-});
+// Post a new user
+router.post("/", createUser);
 
 module.exports = router;

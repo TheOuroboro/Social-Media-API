@@ -54,7 +54,7 @@ We'll be building an api that will use the following
 └─────┬─────────┘
       │
 ┌─────┴─────────┐
-│ followController│
+│followController│
 │ followUser     │
 │ unfollowUser   │
 └───────────────┘

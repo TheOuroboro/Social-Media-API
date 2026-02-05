@@ -17,7 +17,7 @@ const createPost = async (req,res)=> {
 
 
         //Insert new post 
-        const[result ]= await db.promise().query("INSERT INTO posts (user_id, content) VALUES (?, ?)", [user_id, content]);
+        const[result]= await db.promise().query("INSERT INTO posts (user_id, content) VALUES (?, ?)", [user_id, content]);
 
         //fetch the newly created posts 
         const [postRows] = await db.promise().query(`SELECT posts.id, posts.content, posts.created_at, users.id AS user_id, users.username
@@ -60,12 +60,12 @@ const getAllposts = async (req,res) => {
 
 // GET a single post by ID
 const getPostById = async (req, res) => {
-  const postId  = req.params;
+  const postId  = req.params.id;
 
   try {
     const sql = `
     SELECT 
-    post.id ,
+    posts.id ,
     posts.content,
     posts.created_at,
     users.username,
@@ -125,7 +125,7 @@ const getPostWithAuthor = async (req, res) => {
   try {
     const sql = `
     SELECT 
-    post.id ,
+    posts.id ,
     posts.content,
     users.username,
 

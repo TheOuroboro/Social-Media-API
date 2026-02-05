@@ -4,11 +4,13 @@ const router = express.Router();
 
 const {
     likePost,
-    unlikePost
+    unlikePost,
+    getPostWithLikes
 } = require("../controllers/likeController");
 
 router.post("/", likePost);
 router.delete("/", unlikePost);
+router.get("/:id",getPostWithLikes)
 
 // //Get all comments
 // router.get ("/", (req,res)=>{

@@ -2,10 +2,10 @@ const db = require("../db")
 
 // CREATE A COMMENT
 const createComment = async (req, res) => {
-  const { userId, postId, content } = req.body;
+  const { user_id, post_id, content } = req.body;
 
   // 1. Validation
-  if (!userId || !postId || !content) {
+  if (!user_id || !post_id || !content) {
     return res.status(400).json({
       message: "userId, postId and content are required"
     });
@@ -17,7 +17,7 @@ const createComment = async (req, res) => {
       VALUES (?, ?, ?)
     `;
 
-    await db.query(sql, [userId, postId, content]);
+    await db.promise().query(sql, [user_id, post_id, content]);
 
     res.status(201).json({ message: "Comment created successfully" });
   } catch (error) {
@@ -27,7 +27,7 @@ const createComment = async (req, res) => {
 
 // GET COMMENTS FOR A POST
 const getPostComments = async (req, res) => {
-  const postId = req.params.id;
+  const post_id = req.params.id;
 
   try {
     const sql = `
@@ -42,7 +42,7 @@ const getPostComments = async (req, res) => {
       ORDER BY comments.created_at DESC
     `;
 
-    const [comments] = await db.query(sql, [postId]);
+    const [comments] = await db.promise().query(sql, [post_id]);
 
     res.json(comments);
   } catch (error) {
