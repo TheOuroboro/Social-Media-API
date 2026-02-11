@@ -16,16 +16,6 @@ router.post("/",createPost);
 router.get("/",getPostWithAuthor);
 router.get("/",getPostByLikeCount);
 
-// // Example: GET all posts
-// router.get("/", (req, res) => {
-//   res.send("Posts route is working 🚀");
-// });
-
-// //POST a new post
-// router.post("/", (req, res) => {
-//   const { userId, content } = req.body;
-//   res.send(`Post created by user ${userId}: ${content}`);
-// });
 
 
 module.exports = router;

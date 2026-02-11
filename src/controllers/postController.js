@@ -9,8 +9,7 @@ const createPost = async (req,res)=> {
     try {
         //make sure the user exist
         const [userRows] = await db
-        .promise()
-        .query("SELECT id FROM users WHERE id = ?", [user_id]);
+        .promise().query("SELECT id FROM users WHERE id = ?", [user_id]);
         if (userRows.lenght ===0 ){
             return res.status(400).json({success:false,message: "User does not exist"});
         }
@@ -145,9 +144,6 @@ const getPostWithAuthor = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to fetch post" });
   }
 };
-
-
-
 
 
 
